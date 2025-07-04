@@ -402,7 +402,7 @@ function PANEL:PaintOver(w, h)
     -- Tooltips are now drawn above all UI
     if self.HotbarSlots then
         for _, slot in pairs(self.HotbarSlots) do
-            if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
+            if IsValid(slot) and slot.IsHovered and slot.HoveredItem and slot.HoveredItem.class ~= "weapon_empty_hands" then
                 RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
             end
         end
@@ -412,7 +412,7 @@ function PANEL:PaintOver(w, h)
         for row = 1, RustInventory.Constants.INVENTORY_ROWS do
             for col = 1, RustInventory.Constants.INVENTORY_COLS do
                 local slot = self.InventorySlots[row][col]
-                if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
+                if IsValid(slot) and slot.IsHovered and slot.HoveredItem and slot.HoveredItem.class ~= "weapon_empty_hands" then
                     RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
                 end
             end
