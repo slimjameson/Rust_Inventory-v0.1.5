@@ -547,6 +547,9 @@ end
 -- Bind the inventory key using Think hook for key detection
 local lastIPressed = false
 hook.Add("Think", "RustInventoryKeyCheck", function()
+        
+    if gui.IsGameUIVisible() then return end -- WOULD OPEN WHEN IN PAUSE MENU
+        
     local isIPressed = input.IsKeyDown(KEY_I)
     
     -- Check if I key was just pressed (not held)
