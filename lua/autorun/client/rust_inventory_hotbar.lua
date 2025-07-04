@@ -129,7 +129,7 @@ end
 function HOTBAR_PANEL:Paint(w, h)
     -- Draw tooltips for hovered items
     for i, slot in pairs(self.HotbarSlots) do
-        if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
+        if IsValid(slot) and slot.IsHovered and slot.HoveredItem and slot.HoveredItem.class ~= "weapon_empty_hands" then
             local mx, my = gui.MousePos()
             if RustInventory.Tooltip then
                 RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
