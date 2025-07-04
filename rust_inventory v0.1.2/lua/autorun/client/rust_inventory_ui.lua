@@ -412,39 +412,12 @@ function PANEL:Paint(w, h)
     -- Draw much darker overlay for better contrast (closer to Rust's style)
     draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 240))
     
-    -- Draw tooltips for hovered items
-    local mx, my = gui.MousePos()
-    
-    -- Check hotbar slots for tooltips
-    if self.HotbarSlots then
-        for i, slot in pairs(self.HotbarSlots) do
-            if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
-                if RustInventory.Tooltip then
-                    RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
-                end
-            end
-        end
-    end
-    
-    -- Check inventory slots for tooltips
-    if self.InventorySlots then
-        for row = 1, RustInventory.Constants.INVENTORY_ROWS do
-            for col = 1, RustInventory.Constants.INVENTORY_COLS do
-                local slot = self.InventorySlots[row][col]
-                if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
-                    if RustInventory.Tooltip then
-                        RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
-                    end
-                end
-            end
-        end
-    end
 end
 
 -- PaintOver is called after all child panels are painted, ensuring the picked-up item is on top
 function PANEL:PaintOver(w, h)
     local mx, my = gui.MousePos()
-    
+
     -- Draw picked up item following mouse cursor (on top of everything)
     if RustInventory.ItemMovement and RustInventory.ItemMovement.HasPickedUpItem() then
         local pickedUpItem = RustInventory.ItemMovement.GetPickedUpItem()
@@ -452,32 +425,50 @@ function PANEL:PaintOver(w, h)
             local slotSize = RustInventory.Constants.SLOT_SIZE
             local itemX = mx - slotSize / 2
             local itemY = my - slotSize / 2
-            
+
             -- Draw slot background
             RustInventory.Draw.Slot(itemX, itemY, slotSize, slotSize, false, true, true)
-            
+
             -- Draw item icon or text
             local hasValidIcon = false
             local iconMaterial = nil
-            
+
             if pickedUpItem.icon then
                 iconMaterial = Material(pickedUpItem.icon)
                 hasValidIcon = iconMaterial and not iconMaterial:IsError()
             end
-            
+
             if hasValidIcon then
-                -- Draw the icon if it's valid
                 local iconSize = slotSize * 0.6
                 local iconX = itemX + (slotSize - iconSize) / 2
                 local iconY = itemY + (slotSize - iconSize) / 2
-                
+
                 surface.SetDrawColor(255, 255, 255, 255)
                 surface.SetMaterial(iconMaterial)
                 surface.DrawTexturedRect(iconX, iconY, iconSize, iconSize)
             else
-                -- Fallback: draw the item name if no valid icon
                 local itemName = pickedUpItem.name or pickedUpItem.class
-                draw.SimpleText(itemName, "RustInventory_Small", itemX + slotSize/2, itemY + slotSize/2, RustInventory.Colors.text_primary, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(itemName, "RustInventory_Small", itemX + slotSize / 2, itemY + slotSize / 2, RustInventory.Colors.text_primary, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        end
+    end
+
+    -- Tooltips are now drawn above all UI
+    if self.HotbarSlots then
+        for _, slot in pairs(self.HotbarSlots) do
+            if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
+                RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
+            end
+        end
+    end
+
+    if self.InventorySlots then
+        for row = 1, RustInventory.Constants.INVENTORY_ROWS do
+            for col = 1, RustInventory.Constants.INVENTORY_COLS do
+                local slot = self.InventorySlots[row][col]
+                if IsValid(slot) and slot.IsHovered and slot.HoveredItem then
+                    RustInventory.Tooltip.Show(slot.HoveredItem, mx, my)
+                end
             end
         end
     end
