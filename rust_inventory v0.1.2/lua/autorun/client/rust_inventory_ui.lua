@@ -585,3 +585,22 @@ end
 
 -- Listen for inventory updates
 hook.Add("RustInventory_ItemsUpdated", "RustInventory_RefreshUI", RefreshInventoryUI)
+
+
+-- LISTEN FOR ESC FOR CLOSE (WAS MISSING)
+hook.Add("Think", "RustInventory_EscapeClose", function()
+    if IsValid(inventoryPanel) and RustInventory.Config.CloseOnEscape and input.IsKeyDown(KEY_ESCAPE) then
+        -- Prevent rapid reopening/closing
+        if not inventoryPanel.LastEscPress or CurTime() - inventoryPanel.LastEscPress > 0.3 then
+            inventoryPanel.LastEscPress = CurTime()
+            
+            if RustInventory.ItemMovement and RustInventory.ItemMovement.HasPickedUpItem() then
+                RustInventory.ItemMovement.CancelPickup()
+            else
+                inventoryPanel:Close()
+                inventoryPanel = nil
+            end
+        end
+    end
+end)
+
