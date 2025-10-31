@@ -1,1 +1,1 @@
-Config File includes model configuration
+Garry's Mod Rust Inventory style system
